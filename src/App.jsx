@@ -1,25 +1,24 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 function App() {
-  const [DynamicComponent, setDynamicComponent] = useState(null)
+  const containerRef = useRef(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const loadComponent = async () => {
-    // 动态导入组件
-    const module = await import('./components/DynamicComponent')
-    setDynamicComponent(() => module.default)
+  const loadContent = async () => {
+    if (!isLoaded) {
+      const module = await import('./components/DynamicDom');
+      module.initDynamicContent(containerRef.current);
+      setIsLoaded(true);
+    }
   }
 
   return (
     <div>
       <h1>React Dynamic Import Demo</h1>
-      <button onClick={loadComponent}>
-        Load Dynamic Component
+      <button onClick={loadContent}>
+        Load Dynamic Content
       </button>
-      {DynamicComponent && (
-        <div style={{ marginTop: '20px' }}>
-          <DynamicComponent />
-        </div>
-      )}
+      <div ref={containerRef}></div>
     </div>
   )
 }
